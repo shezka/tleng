@@ -85,6 +85,9 @@ class Array(NonTerminal):
     def messages(self):
         return self._element
 
+    def value(self):
+        return ComposeValue(self)
+
 class Pair(NonTerminal):
     def __init__(self, string, value):
         self._key = string # needed to check unique keys
@@ -128,10 +131,18 @@ class Object(NonTerminal):
     def messages(self):
         return self._members
 
+    def value(self):
+        return ComposeValue(self)
+
 class EmptyObject(NonTerminal):
     def messages(self):
         return ['{}']
+        
+    def value(self):
+        return SimpleValue('{}')
 
 class EmptyArray(NonTerminal):
     def messages(self):
         return ['[]']
+    def value(self):
+        return SimpleValue('[]')
