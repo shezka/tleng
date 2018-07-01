@@ -1,41 +1,44 @@
 import ply.lex as lex
 
-tokens = [
-    'true',
-    'false',
-    'null',
-    'string',
-    'number'
-]
-def t_null(t):
-    r'null'
-    return t
-    
-def t_true(t):
-    r'true'
-    return t
+reserved = {
+    'NULL' : 'NULL',
+    'null' : 'NULL',
+    'true' : 'TRUE',
+    'TRUE' : 'TRUE',
+    'FALSE': 'FALSE',
+    'false': 'FALSE'
+}
 
-def t_false(t):
-    r'false'
-    return t
+tokens = ['STRING','NUMBER'] + list(set(reserved.values()))
+
+
 # los literales son chars que matchean de una
 literals = "(){}[]:,"
-#tokens = list(reserved.values()) + tokens
-def t_string(t):
-    # el primer ^ toma complemento de los símbolos que siguen
-    #r'"([^"\n]|(\\"))*"$'
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    #r'("(\\"|[^"])*")|(\'(\\\'|[^\'])*\')'
-    #r'\"([^\\\n]|(\\.))*?\"'
+
+def t_STRING(t):
+    # We assume that t is a STRING and contains a '-' iif it surrounded by double quotes (")
+    r'"[^"]*"|[a-zA-Z][a-zA-Z0-9\\]*'
+    t.type = reserved.get(t.value,'STRING')    # Check for reserved words
     return t
 
-def t_number(t):
-    r'\d+'
-    t.value = int(t.value)    
+def t_NUMBER(t):
+    r'\d+(\.\d+)?((e|E)(\+|-)?\d*)?'
+    # one o more digits possible follow by decimals and/or scientific denotation (e or E +/-) 
     return t
 
+# This is only to print a better error message
+def t_NEWLINE(token):
+    r"\n+"
+    token.lexer.lineno += len(token.value)
 
+t_ignore_WHITESPACES = r"[ \t]+"
 
-def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
+def t_error(token):
+    error_message = "Illegal Token"
+    error_message += "\nvalue: {}".format(str(token.value[0]))
+    error_message += "\nline:  {}".format(str(token.lineno))
+    error_message += "\nposition:  {}".format(str(token.lexpos))
+    print(error_message)
+    token.lexer.skip(1)
+    # An exception could also be thrown
+    # raise Exception(error_message)
