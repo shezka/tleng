@@ -26,7 +26,8 @@ class SimpleValue(NonTerminal):
 class String(SimpleValue):
     # It just exists due to the behaviour of a '-' at the beginning
     def __init__(self, value):
-        if len(value) and ('\n' in value or '-' == value[0]):
+        value = value.replace('"', '');
+        if len(value) and ('\\n' in value or '-' == value[0]):
             self._value = '"{}"'.format(value)
         else:
             self._value = '{}'.format(value)
@@ -93,7 +94,7 @@ class Pair(NonTerminal):
         self._key = string # needed to check unique keys
 
         if value.is_compose_value():
-            self._messages = ['{}'.format(string.value())] + list(map(lambda x: '{}{}'.format(tab, x), value.messages()))
+            self._messages = ['{}:'.format(string.value())] + list(map(lambda x: '{}{}'.format(tab, x), value.messages()))
         else:
             self._messages = ['{}: {}'.format(string.value(), value.value())]
 
