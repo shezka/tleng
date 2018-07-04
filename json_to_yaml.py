@@ -16,10 +16,13 @@ def read():
     return json
 
 if __name__ == "__main__":
-    expr = read()
+    try:
+        expr = read()
 
-    lexer = lex(module=tokrules)
-    parser = yacc(module=parser_rules)
-    
-    ast = parser.parse(expr, lexer)
-    print(ast.yaml())
+        lexer = lex(module=tokrules)
+        parser = yacc(module=parser_rules)
+        
+        ast = parser.parse(expr, lexer)
+        print(ast.yaml())
+    except Exception as e:
+        print(e.__class__.__name__+": "+str(e))

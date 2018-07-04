@@ -7,7 +7,6 @@ from expressions import *
 
 def p_value_string(expression):
     '''value : STRING'''
-    print("bla1")
     expression[0] = String(expression[1])
 
 def p_value_number(expression):

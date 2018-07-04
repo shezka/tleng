@@ -29,8 +29,8 @@ class SimpleValue(NonTerminal):
 class String(SimpleValue):
     # It just exists due to the behaviour of a '-' at the beginning
     def __init__(self, value):
-        if (value[0] != '"') or (value[len(value) - 1] != '"'):
-            raise Exception("'{}' must be a reserved word or be inside quotes on JSON object".format(value))
+        # if (value[0] != '"') or (value[len(value) - 1] != '"'):
+        #     raise Exception("'{}' must be a reserved word or be inside quotes on JSON object".format(value))
         value = value.replace('"', '');
         if len(value) and ('\\n' in value or '-' == value[0]):
             self._value = '"{}"'.format(value)
