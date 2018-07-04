@@ -17,6 +17,9 @@ class SimpleValue(NonTerminal):
     def is_compose_value(self):
         return False
 
+    def messages(self):
+    	return [self._value]
+
     def value(self):
         return self._value
 
@@ -33,9 +36,6 @@ class String(SimpleValue):
             self._value = '"{}"'.format(value)
         else:
             self._value = '{}'.format(value)
-
-    def value(self):
-        return self._value
 
     def __eq__(self, string):
         return self._value == string.value()
@@ -81,30 +81,20 @@ class Element(NonTerminal):
     def messages(self):
         return self._messages
 
-class Array(NonTerminal):
+class Array(ComposeValue):
     def __init__(self, element):
         self._element = element.messages()
 
     def messages(self):
         return self._element
 
-    def value(self):
-        return ComposeValue(self)
 
-class Pair(NonTerminal):
-    def __init__(self, string, value):
-        self._key = string # needed to check unique keys
-
-        if value.is_compose_value():
-            self._messages = ['{}:'.format(string.value())] + list(map(lambda x: '{}{}'.format(tab, x), value.messages()))
-        else:
-            self._messages = ['{}: {}'.format(string.value(), value.value())]
+class Object(ComposeValue):
+    def __init__(self, members):
+        self._members = members.messages()
 
     def messages(self):
-        return self._messages
-
-    def key(self):
-        return self._key
+        return self._members
 
 class Member(NonTerminal): 
     def __init__(self, pair):
@@ -127,25 +117,17 @@ class Member(NonTerminal):
     def keys(self):
         return self._keys
 
-class Object(NonTerminal):
-    def __init__(self, members):
-        self._members = members.messages()
+class Pair(NonTerminal):
+    def __init__(self, string, value):
+        self._key = string # needed to check unique keys
+
+        if value.is_compose_value():
+            self._messages = ['{}:'.format(string.value())] + list(map(lambda x: '{}{}'.format(tab, x), value.messages()))
+        else:
+            self._messages = ['{}: {}'.format(string.value(), value.value())]
 
     def messages(self):
-        return self._members
+        return self._messages
 
-    def value(self):
-        return ComposeValue(self)
-
-class EmptyObject(NonTerminal):
-    def messages(self):
-        return ['{}']
-        
-    def value(self):
-        return SimpleValue('{}')
-
-class EmptyArray(NonTerminal):
-    def messages(self):
-        return ['[]']
-    def value(self):
-        return SimpleValue('[]')
+    def key(self):
+        return self._key

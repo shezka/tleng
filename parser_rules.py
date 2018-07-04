@@ -7,6 +7,7 @@ from expressions import *
 
 def p_value_string(expression):
     '''value : STRING'''
+    print("bla1")
     expression[0] = String(expression[1])
 
 def p_value_number(expression):
@@ -27,15 +28,21 @@ def p_value_null(expression):
 
 def p_value_object(expression):
     '''value : object'''
-    expression[0] = expression[1].value()
+    if(expression[1].is_compose_value()):
+        expression[0] = ComposeValue(expression[1])
+    else:
+        expression[0] = expression[1]
 
 def p_value_array(expression):
     '''value : array'''
-    expression[0] = ComposeValue(expression[1])
+    if(expression[1].is_compose_value()):
+        expression[0] = ComposeValue(expression[1])
+    else:
+        expression[0] = expression[1]
 
 def p_object_empty(expression):
     '''object : '{' '}' '''
-    expression[0] = EmptyObject()
+    expression[0] = SimpleValue('{}')
 
 def p_object_members(expression):
     '''object : '{' members '}' '''
@@ -56,7 +63,7 @@ def p_pair(expression):
 
 def p_array_empty(expression):
     '''array : '[' ']' '''
-    expression[0] = EmptyArray()
+    expression[0] = SimpleValue('[]')
 
 def p_array_elements(expression):
     '''array : '[' elements ']' '''
@@ -70,7 +77,7 @@ def p_elements_elements(expression):
     '''elements : value ',' elements'''
     expression[0] = Element(expression[1])
     expression[0].concat_element(expression[3])
-    
+
 def p_error(subexpr):
     # In case no production matches
     raise Exception("Syntax error.")
